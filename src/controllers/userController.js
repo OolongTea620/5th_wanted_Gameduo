@@ -11,4 +11,5 @@ const signup = async (req, res) => {
 };
 
 const getUserInfo = async (req, res) => {};
+
 module.exports = { signup };
