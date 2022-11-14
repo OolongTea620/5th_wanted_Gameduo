@@ -11,6 +11,7 @@ module.exports = class RaidRecord extends Sequelize.Model {
         },
         score: {
           type: Sequelize.INTEGER.UNSIGNED,
+          defaultValue: 0,
         },
         enterTime: {
           type: Sequelize.DATE,
