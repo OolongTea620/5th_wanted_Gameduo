@@ -6,9 +6,7 @@ const options = {
     return 1;
   },
 
-  dispose: (value, key) => {
-    freeFromMemoryOrWhatever(value);
-  },
+  dispose: (value, key) => {},
 
   allowStale: false,
 
@@ -18,7 +16,6 @@ const options = {
   fetchMethod: async (key, staleValue, { options, signal }) => {},
 };
 
-const sortingScore = () => {};
 const bossRaidCache = new LRU(options);
 
 module.exports = { bossRaidCache };
