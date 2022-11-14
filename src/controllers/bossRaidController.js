@@ -1,4 +1,5 @@
 const raidRecordService = require("../services/raidRecordService");
+const userService = require("../services/userService");
 
 const getStatus = async (req, res) => {
   const result = await raidRecordService.checkBossRaid();
@@ -19,4 +20,9 @@ const raidEnd = async (req, res) => {
   res.status(200).json({});
 };
 
-module.exports = { getStatus, raidStart, raidEnd };
+const getTopRanckerList = async (req, res) => {
+  const result = await userService.rankScoreByuserId(req);
+  res.status(200).json(result);
+};
+
+module.exports = { getStatus, raidStart, raidEnd, getTopRanckerList };

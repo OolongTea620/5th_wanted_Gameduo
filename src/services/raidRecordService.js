@@ -15,6 +15,26 @@ const recordRaidInCache = (userId, raidRecordId, level) => {
       ttl: 180 * 1000,
     }
   );
+  bossRaidCache.set("recentEntered", {
+    userId,
+    raidRecordId,
+    level,
+  });
+};
+
+const getRecordsByuserId = async (userId) => {
+  const records = await RaidRecord.findAll(
+    {
+      attributes: { exclude: ["userId"] },
+    },
+    {
+      where: {
+        userId,
+      },
+      order: [["enterTime", "DESC"]],
+    }
+  );
+  return records;
 };
 
 const checkBossRaid = async () => {
@@ -73,16 +93,18 @@ const endRaid = async (req) => {
   ) {
     throw new error("Incorrect input", 409);
   }
+  endTime = new Date();
   const raidRecord = await RaidRecord.update(
-    { score: 10, endTime: new Date() },
+    { score: 10, endTime },
     {
       where: {
         raidRecordId: raidRecordId,
       },
     }
   );
+  bossRaidCache.delete("inBossRaid");
 
   return raidRecord;
 };
 
-module.exports = { checkBossRaid, enterRaid, endRaid };
+module.exports = { checkBossRaid, enterRaid, endRaid, getRecordsByuserId };

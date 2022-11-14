@@ -10,6 +10,10 @@ const signup = async (req, res) => {
   res.status(201).json(userCreateResult);
 };
 
-const getUserInfo = async (req, res) => {};
+const getUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  const userInfo = await userService.getUserInfo(userId);
+  res.status(200).json(userInfo);
+};
 
-module.exports = { signup };
+module.exports = { signup, getUserInfo };
