@@ -2,7 +2,6 @@ const sequelize = require("sequelize");
 
 const User = require("../models/user");
 const raidRecordService = require("../services/raidRecordService");
-
 const error = require("../middlewares/errorConstructor");
 
 const create = async () => {
@@ -42,8 +41,16 @@ const rankScoreByuserId = async (req) => {
   return { topRankerInfoList: rankList, myRankingInfo: userRank };
 };
 
+const addUserTotalScore = async (userId, score) => {
+  const result = await sequelize.query(
+    `update users set totalScore = totalScore + ${score} where num = ${userId}`
+  );
+  return result;
+};
+
 module.exports = {
   create,
   getUserInfo,
   rankScoreByuserId,
+  addUserTotalScore,
 };

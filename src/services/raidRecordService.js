@@ -1,6 +1,7 @@
 const RaidRecord = require("../models/raidRecord");
 const { bossRaidCache } = require("../cache/raidRecordCache");
 
+const userService = require("../services/userService");
 const error = require("../middlewares/errorConstructor");
 
 const recordRaidInCache = (userId, raidRecordId, level) => {
@@ -15,26 +16,6 @@ const recordRaidInCache = (userId, raidRecordId, level) => {
       ttl: 180 * 1000,
     }
   );
-  bossRaidCache.set("recentEntered", {
-    userId,
-    raidRecordId,
-    level,
-  });
-};
-
-const getRecordsByuserId = async (userId) => {
-  const records = await RaidRecord.findAll(
-    {
-      attributes: { exclude: ["userId"] },
-    },
-    {
-      where: {
-        userId,
-      },
-      order: [["enterTime", "DESC"]],
-    }
-  );
-  return records;
 };
 
 const checkBossRaid = async () => {
@@ -84,27 +65,48 @@ const enterRaid = async (req) => {
 const endRaid = async (req) => {
   const { userId, raidRecordId } = req.body;
   const inBossRaid = bossRaidCache.get("inBossRaid");
+
   if (!inBossRaid) {
-    throw new error("Timeout", 404);
+    throw new error("timeout", 204);
   }
-  if (
-    userId !== inBossRaid.userId ||
-    raidRecordId !== inBossRaid.raidRecordId
-  ) {
-    throw new error("Incorrect input", 409);
+
+  const isMatchUserId = inBossRaid.userId === userId;
+  const isMatchRecordId = inBossRaid.raidRecordId === raidRecordId;
+  if (!isMatchUserId || !isMatchRecordId) {
+    throw new error("dismatch values", 400);
   }
+
   endTime = new Date();
+  const playLevel = inBossRaid.level;
+  const scores = bossRaidCache.get("scores");
+
   const raidRecord = await RaidRecord.update(
-    { score: 10, endTime },
+    { score: scores[`${playLevel}`], endTime },
     {
       where: {
         raidRecordId: raidRecordId,
       },
     }
   );
-  bossRaidCache.delete("inBossRaid");
+  await userService.addUserTotalScore(userId, scores[`${playLevel}`]);
 
+  bossRaidCache.delete("inBossRaid");
   return raidRecord;
+};
+
+const getRecordsByuserId = async (userId) => {
+  const records = await RaidRecord.findAll(
+    {
+      attributes: { exclude: ["userId"] },
+    },
+    {
+      where: {
+        userId,
+      },
+      order: [["enterTime", "DESC"]],
+    }
+  );
+  return records;
 };
 
 module.exports = { checkBossRaid, enterRaid, endRaid, getRecordsByuserId };
