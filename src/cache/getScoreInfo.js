@@ -37,8 +37,9 @@ const putScoreInfoCache = async () => {
       return acc;
     }, {});
     cacheRaidInfo(s3data);
+    console.log("bossraid info in cache");
   } catch (error) {
-    return null; // 입력하지 않는 걸로 마무리
+    return null;
   }
 };
 
