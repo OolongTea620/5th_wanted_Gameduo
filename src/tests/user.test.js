@@ -17,7 +17,6 @@ afterAll(async () => {
 describe("POST /user", () => {
   test("create user : success", async () => {
     const response = await request(app).post("/user");
-    console.log(response.body);
     expect(response.status).toEqual(201);
     expect(!!response.body.userId).toEqual(true);
   });
