@@ -95,8 +95,14 @@
 ### 개발 계획
 
 #### **cache 설계**  
-// 여기에 이미지 첨부
 
+| keyName                | 데이터 타입 |               설명                |              비고               |
+| :--------------------- | :---------: | :-------------------------------: | :-----------------------------: |
+| totalUser              |   String    |    레이드에 참가중인 유저의 명    | 유저 새로 생성시, 트랜잭션 적용 |
+| usersScore             | sorted sets |  유저가 획득한 레이드 점수 총 합  |                -                |
+| bossRaid               |   hashes    |  현재 진행중인 레이드 진행 정보   |           180초 제한            |
+| recentRaid             |   hashes    |       최근 레이드 진행 정보       |      bossRaid와 구조 동일       |
+| raid:[raidId]:[userId] |   hashes    | 레이드 아이디, 유저의 레이드 정보 |   {startDate, endDate, score}   |
 #### 개발 리스트
 
 **API**

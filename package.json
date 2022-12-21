@@ -4,7 +4,7 @@
   "description": "원티드 프리온보딩 5차 과제",
   "main": "app.js",
   "scripts": {
-    "test": "MODE_ENV=test jest --runInBand",
+    "test": "MODE_ENV=test jest --runInBand --detectOpenHandles",
     "start": "nodemon server.js"
   },
   "repository": {
