@@ -29,25 +29,25 @@ const createUser = async () => {
 };
 
 const getUserInfoById = async (userId) => {
-  try {
-    const userTotalScore = await redisClient.hGet("usersScore", String(userId));
-    const history = await redisClient.sendCommand(""); //key에 userId가 들어가는 모든 값 가져오기
-    return {
-      totalScore: Number(userTotalScore),
-      bossRaidHistory: history,
-    };
-  } catch (err) {
-    throw new error(err.message, err.statusCode);
-  }
+  // try {
+  //   const userTotalScore = await redisClient.hGet("usersScore", String(userId));
+  //   const history = await redisClient.sendCommand(""); //key에 userId가 들어가는 모든 값 가져오기
+  //   return {
+  //     totalScore: Number(userTotalScore),
+  //     bossRaidHistory: history,
+  //   };
+  // } catch (err) {
+  //   throw new error(err.message, err.statusCode);
+  // }
 };
 
 const addUserTotalScore = async (userId, score) => {
-  try {
-    const result = await redisClient.incrBy("usersScore", `${userId}`, score);
-    console.info(`유저 ${userId}, ${score}점 획득`);
-    return result;
-  } catch (err) {
-    throw new error(err.status, err.message);
-  }
+  // try {
+  //   const result = await redisClient.incrBy("usersScore", `${userId}`, score);
+  //   console.info(`유저 ${userId}, ${score}점 획득`);
+  //   return result;
+  // } catch (err) {
+  //   throw new error(err.status, err.message);
+  // }
 };
 module.exports = { createUser, getUserInfoById };
