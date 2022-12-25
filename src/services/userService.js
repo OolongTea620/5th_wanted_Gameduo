@@ -1,53 +1,50 @@
-const { redisClient } = require("../cache");
-const redis = redisClient.v4; //redis-node : 4.5.1 legacyMode
+const { redisCli } = require("../cache");
 const error = require("../middlewares/errorConstructor");
 
 /**
- * @description totalUser 1증가, usersScore에 등록
+ * totalUser 1증가, usersScore에 등록
  * @returns obj {userId : number}
  */
 
 const createUser = async () => {
   try {
-    const totalUser = await redis.get("totalUser");
+    const totalUser = await redisCli.get("totalUser");
     if (totalUser === "0" || !totalUser) {
-      await redis.set("totalUser", "0");
+      await redisCli.set("totalUser", "0");
     }
 
-    const userId = await redis.incr("totalUser", 1);
-    const result = await redis.sendCommand([
-      "ZADD",
-      "usersScore",
-      "0",
-      `${userId}`,
-    ]);
+    const cUserCount = await redisCli.get("totalUser");
+    const newUserId = Number(cUserCount) + 1;
 
-    return { userId };
+    const [incrReulst, addRankResult, userAddReult] = await redisCli
+      .multi()
+      .zAdd("rank", { score: 0, value: `${newUserId}` })
+      .incr("totalUser", 1)
+      .exec();
+
+    return { userId: newUserId };
   } catch (err) {
     console.log(err);
   }
 };
 
 const getUserInfoById = async (userId) => {
-  // try {
-  //   const userTotalScore = await redisClient.hGet("usersScore", String(userId));
-  //   const history = await redisClient.sendCommand(""); //key에 userId가 들어가는 모든 값 가져오기
-  //   return {
-  //     totalScore: Number(userTotalScore),
-  //     bossRaidHistory: history,
-  //   };
-  // } catch (err) {
-  //   throw new error(err.message, err.statusCode);
-  // }
+  try {
+    const totalScore = await redisCli.zScore(`rank`, `${userId}`);
+
+    const results = await redisCli.scan(0, {
+      MATCH: `raid:**:${userId}`,
+    });
+
+    console.log("scan return", results.keys);
+
+    return {
+      totalScore,
+      bossRaidHistory: "history",
+    };
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const addUserTotalScore = async (userId, score) => {
-  // try {
-  //   const result = await redisClient.incrBy("usersScore", `${userId}`, score);
-  //   console.info(`유저 ${userId}, ${score}점 획득`);
-  //   return result;
-  // } catch (err) {
-  //   throw new error(err.status, err.message);
-  // }
-};
 module.exports = { createUser, getUserInfoById };

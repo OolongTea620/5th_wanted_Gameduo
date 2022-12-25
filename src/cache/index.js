@@ -1,19 +1,18 @@
 require("dotenv").config();
 const { createClient } = require("redis");
 
-const redisClient = createClient({
-  legacyMode: true,
+const redisCli = createClient({
   password: process.env.REDIS_PASSWORD,
 });
 
-redisClient.on("connect", () => {
+redisCli.on("connect", () => {
   console.log("Redis Client Connect");
 });
 
-redisClient.on("error", (err) => {
+redisCli.on("error", (err) => {
   console.log("Redis Client Error", err);
 });
 
 module.exports = {
-  redisClient,
+  redisCli,
 };

@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { createApp } = require("./app");
-const { redisClient } = require("./src/cache");
+const { redisCli } = require("./src/cache");
 const { settingScore } = require("./src/cache/initScore");
 
 const startServer = async () => {
@@ -8,7 +8,7 @@ const startServer = async () => {
   const PORT = process.env.PORT;
 
   // redis-node : 4.5.1 legacyMode
-  await redisClient.connect();
+  await redisCli.connect();
   settingScore();
 
   app.listen(PORT, () => {

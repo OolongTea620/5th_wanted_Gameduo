@@ -1,5 +1,4 @@
 const raidRecordService = require("../services/raidRecordService");
-const userService = require("../services/userService");
 
 const getStatus = async (req, res) => {
   const result = await raidRecordService.checkBossRaid();
@@ -7,7 +6,8 @@ const getStatus = async (req, res) => {
 };
 
 const raidStart = async (req, res) => {
-  const result = await raidRecordService.enterRaid(req);
+  const { userId, level } = req.body;
+  const result = await raidRecordService.startBossRaid(userId, level);
   res.status(201).json(result);
 };
 
