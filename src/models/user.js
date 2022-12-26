@@ -4,11 +4,6 @@ module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        userId: {
-          type: Sequelize.BIGINT.UNSIGNED,
-          autoIncrement: true,
-          primaryKey: true,
-        },
         totalScore: {
           type: Sequelize.INTEGER.UNSIGNED,
           defaultValue: 0,
@@ -29,7 +24,7 @@ module.exports = class User extends Sequelize.Model {
   static associate(db) {
     db.User.hasMany(db.RaidRecord, {
       foreignKey: "userId",
-      sourceKey: "userId",
+      sourceKey: "id",
       onDelete: "cascade",
     });
   }

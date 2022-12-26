@@ -35,7 +35,7 @@ module.exports = class RaidRecord extends Sequelize.Model {
   static associate(db) {
     db.RaidRecord.belongsTo(db.User, {
       foreignKey: "userId",
-      targetKey: "userId",
+      targetKey: "id",
     });
   }
 };

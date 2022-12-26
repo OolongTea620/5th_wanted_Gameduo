@@ -93,17 +93,18 @@ BOSSRAID_INFO_URL=과제 json데이터 S3 주소
 ## 구현 계획
 
 ### 개발 계획
-
 **구현 기능 명세**  
-//여기에...
+
+[API기능명세 URL](https://docs.google.com/spreadsheets/d/1SkjyH8MstoKRNQVduIeXUZnzSRG-P8zjsFJtw92Tq74/edit?usp=sharing)
 
 
-**데이터베이스 설계**
+**데이터베이스 설계**   
 
+ERD
 <img src="./wanted5_database2.png" title="ERD"/>
 
 
-**redis cache 설계**  
+**redis cache**  
 | keyName  | 데이터 타입 |                       설명                       |      비고      |
 | :------- | :---------: | :----------------------------------------------: | :------------: |
 | ranking  | sorted sets | 서버 구동 이후, 유저가 획득한 보스레이드 총 점수 | ranking조회 용 |

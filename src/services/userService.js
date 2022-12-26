@@ -1,50 +1,49 @@
+const { sequelize } = require("../models");
+
+const User = require("../models/user");
+const RaidRecord = require("../models/raidRecord");
 const { redisCli } = require("../cache");
 const error = require("../middlewares/errorConstructor");
 
-/**
- * totalUser 1증가, usersScore에 등록
- * @returns obj {userId : number}
- */
-
 const createUser = async () => {
   try {
-    const totalUser = await redisCli.get("totalUser");
-    if (totalUser === "0" || !totalUser) {
-      await redisCli.set("totalUser", "0");
-    }
-
-    const cUserCount = await redisCli.get("totalUser");
-    const newUserId = Number(cUserCount) + 1;
+    const sequelizeTransaction = await sequelize.transaction();
+    const newUser = await User.create(
+      {},
+      { transaction: sequelizeTransaction }
+    );
+    console.log(newUser, newUser.id);
 
     const [incrReulst, addRankResult, userAddReult] = await redisCli
       .multi()
-      .zAdd("rank", { score: 0, value: `${newUserId}` })
-      .incr("totalUser", 1)
+      .zAdd("rankScore", { score: 0, value: `${newUser.id}` })
       .exec();
 
-    return { userId: newUserId };
+    await sequelizeTransaction.commit();
+    return { userId: newUser.id };
   } catch (err) {
-    console.log(err);
+    sequelizeTransaction.rollback();
   }
 };
 
 const getUserInfoById = async (userId) => {
-  try {
-    const totalScore = await redisCli.zScore(`rank`, `${userId}`);
-
-    const results = await redisCli.scan(0, {
-      MATCH: `raid:**:${userId}`,
-    });
-
-    console.log("scan return", results.keys);
-
-    return {
-      totalScore,
-      bossRaidHistory: "history",
-    };
-  } catch (err) {
-    console.error(err);
+  const user = await User.findOne({ id: userId });
+  if (!user) {
+    throw new error("NotFound User", 404);
   }
+  const raidRecords = await RaidRecord.findAll(
+    {
+      attributes: [["id", "raidRecordId"], "enterTime", "endTime", "score"],
+    },
+    {
+      userId: userId,
+    }
+  );
+  console.log(user, raidRecords);
+  return {
+    totalScore: user.totalScore,
+    bossRaidHistory: raidRecords,
+  };
 };
 
 module.exports = { createUser, getUserInfoById };
