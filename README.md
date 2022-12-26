@@ -7,34 +7,10 @@
   <p align="center">
   서버 캐시를 사용한 의자앉기 방식의 보스룸 게임 만들기
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>API 문서 보러가기 »</strong></a>
+    <!-- <a href="https://github.com/othneildrew/Best-README-Template"><strong>API 문서 보러가기 »</strong></a> -->
     <br />
   </p>
 </div>
-
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>목차</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">프로젝트 소개</a>
-      <ul>
-        <li><a href="#built-with">사용 라이브러리</a></li>
-        <li><a href="#installation">실행 방법</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">구현 계획</a>
-      <ul>
-        <li><a href="#prerequisites">개발 설계</a></li>
-      </ul>
-    </li>
-    <li><a href="#roadmap">개발 로드맵</a></li>
-    <li><a href="#contributing">도움받은 자료</a></li>
-  </ol>
-</details>
 
 <!-- ABOUT THE PROJECT -->
 ## 프로젝트 소개
@@ -45,7 +21,7 @@
 2022.11.12 ~ 2022.11.18         
 // *redis-npm 이슈로 다른 Server cache 라이브러리를 사용해서 임시로 구현*
 
-프로젝트 내용   
+프로젝트 요구 사항   
 #### 간단한 보스레이드 프로그래밍 
   - 레이드 : 유저 1명이 보스룸에 접속할 때 하는 게임 한번을 가리킴 
   - 유저는 자신의 유저 id를 발급 받을 수 있다. 
@@ -62,13 +38,19 @@
 * 서버 캐시 구현 방법
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### 사용 라이브러리
-개발   
+### 개발 환경
+개발 환경 
+
+운영체제: ubuntu 22.04  
+IDE : Windows VScode
+
+
+개발 언어, 라이브러리  
 `Javascript`, `Express(Node.js)`, `lru-cache` (redis 대체)  
 // *redis npm [라이브러리 작동오류 이슈](https://stackoverflow.com/questions/70145795/node-redis-does-not-work-on-my-windows-computer-even-though-the-server-is-up-and)로 대체해서 사용*
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### API 실행 방법
+### 프로젝트 구동 방법
 
 1. 레포지토리 다운받기
     ```sh
@@ -82,11 +64,29 @@
    ```sh
    npm install
    ```
+
 4. 서버 실행
    ```js
-   npm start
+   npm test // 테스트 실행
+   npm dev // 개발 모드 실행
+   npm start // 서버 프로그램 실행
    ```
 
+  환경 변수
+  ```dotenv
+# Server
+MODE_ENV=[development|production]중 1
+PORT=포트번호
+
+# redis
+REDIS_USERNAME=유저명
+REDIS_PASSWORD=비번
+REDIS_HOST=접근호스트
+REDIS_PORT=서비스 리스닝 포트
+
+# S3 url
+BOSSRAID_INFO_URL=과제 json데이터 S3 주소
+  ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
@@ -94,18 +94,25 @@
 
 ### 개발 계획
 
-#### **cache 설계**  
+**구현 기능 명세**  
+//여기에...
 
-| keyName                | 데이터 타입 |               설명                |              비고               |
-| :--------------------- | :---------: | :-------------------------------: | :-----------------------------: |
-| totalUser              |   String    |    레이드에 참가중인 유저의 명    | 유저 새로 생성시, 트랜잭션 적용 |
-| usersScore             | sorted sets |  유저가 획득한 레이드 점수 총 합  |                -                |
-| bossRaid               |   hashes    |  현재 진행중인 레이드 진행 정보   |           180초 제한            |
-| recentRaid             |   hashes    |       최근 레이드 진행 정보       |      bossRaid와 구조 동일       |
-| raid:[raidId]:[userId] |   hashes    | 레이드 아이디, 유저의 레이드 정보 |   {startDate, endDate, score}   |
-#### 개발 리스트
 
-**API**
+**데이터베이스 설계**
+
+<img src="./wanted5_database2.png" title="ERD"/>
+
+
+**redis cache 설계**  
+| keyName  | 데이터 타입 |                       설명                       |      비고      |
+| :------- | :---------: | :----------------------------------------------: | :------------: |
+| ranking  | sorted sets | 서버 구동 이후, 유저가 획득한 보스레이드 총 점수 | ranking조회 용 |
+| bossRaid |   hashes    |          현재 진행중인 레이드 진행 정보          |   180초 제한   |
+
+
+**개발 리스트**
+
+API
 - [x] 유저 생성 API  
 - [x] 보스룸 레이드 상태 확인 API
 - [x] 보스룸 입장(레이드 시작)
@@ -119,20 +126,27 @@
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
-## 개발 체크 리스트
+## 추가 개발 체크 리스트
 
 - [x] API 구현
 - [x] README.md 작성
 - [ ] Test 작성
-- [ ] Redis-npm으로 다시 구현(리펙토링)
+  - [ ] unitTest
+  - [ ] superTest
+- [x] Redis-npm으로 다시 구현(리펙토링)
+- [ ] swagger도입
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## 개발 이슈
+
+**redis-node 비구동 문제**
+  
 ## 도움받은 자료
 ### 서적
-  \-
-### 인터넷 링크
+
+### 링크
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
