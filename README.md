@@ -46,7 +46,7 @@ IDE : Windows VScode
 
 
 개발 언어, 라이브러리  
-`Javascript`, `Express(Node.js)`, `lru-cache` (redis 대체)  
+`Javascript`, `Express(Node.js)`, `lru-cache` (redis 대체), sequelize
 // *redis npm [라이브러리 작동오류 이슈](https://stackoverflow.com/questions/70145795/node-redis-does-not-work-on-my-windows-computer-even-though-the-server-is-up-and)로 대체해서 사용*
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
