@@ -1,18 +1,22 @@
+const raidService = require("../services/raidService");
 const raidRecordService = require("../services/raidRecordService");
 
 const getStatus = async (req, res) => {
-  const result = await raidRecordService.checkBossRaid();
+  const result = await raidService.getBossRaidStatus();
+
   res.status(200).json(result);
 };
 
 const raidStart = async (req, res) => {
   const { userId, level } = req.body;
-  const result = await raidRecordService.startBossRaid(userId, level);
+  const result = await raidService.startBossRaid(userId, level);
+
   res.status(201).json(result);
 };
 
 const raidEnd = async (req, res) => {
-  const result = await raidRecordService.endRaid(req);
+  const { userId, raidRecordId } = req.body;
+  const result = await raidService.endBossRaid(userId, raidRecordId);
 
   if (!result) {
     throw new error("Server Error", 500);
@@ -21,7 +25,8 @@ const raidEnd = async (req, res) => {
 };
 
 const getTopRanckerList = async (req, res) => {
-  const result = await userService.rankScoreByuserId(req);
+  const { userId } = req.body;
+  const result = await raidRecordService.getRankingListByuserId(userId);
   res.status(200).json(result);
 };
 

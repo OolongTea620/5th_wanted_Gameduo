@@ -15,6 +15,7 @@ module.exports = class RaidRecord extends Sequelize.Model {
         enterTime: {
           type: Sequelize.DATE,
           allowNull: false,
+          defaultValue: Sequelize.NOW,
         },
         endTime: {
           type: Sequelize.DATE,

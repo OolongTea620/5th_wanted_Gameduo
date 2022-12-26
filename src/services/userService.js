@@ -12,13 +12,11 @@ const createUser = async () => {
       {},
       { transaction: sequelizeTransaction }
     );
-    console.log(newUser, newUser.id);
 
     const [incrReulst, addRankResult, userAddReult] = await redisCli
       .multi()
-      .zAdd("rankScore", { score: 0, value: `${newUser.id}` })
+      .zAdd("rank", { score: 0, value: `${newUser.id}` })
       .exec();
-
     await sequelizeTransaction.commit();
     return { userId: newUser.id };
   } catch (err) {
@@ -27,19 +25,14 @@ const createUser = async () => {
 };
 
 const getUserInfoById = async (userId) => {
-  const user = await User.findOne({ id: userId });
+  const user = await User.findOne({ where: { id: userId } });
   if (!user) {
     throw new error("NotFound User", 404);
   }
-  const raidRecords = await RaidRecord.findAll(
-    {
-      attributes: [["id", "raidRecordId"], "enterTime", "endTime", "score"],
-    },
-    {
-      userId: userId,
-    }
-  );
-  console.log(user, raidRecords);
+  const raidRecords = await RaidRecord.findAll({
+    attributes: [["id", "raidRecordId"], "enterTime", "endTime", "score"],
+    where: { userId: userId },
+  });
   return {
     totalScore: user.totalScore,
     bossRaidHistory: raidRecords,
