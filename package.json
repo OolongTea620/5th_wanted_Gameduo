@@ -4,8 +4,10 @@
   "description": "원티드 프리온보딩 5차 과제",
   "main": "app.js",
   "scripts": {
-    "test": "MODE_ENV=test jest --runInBand",
-    "start": "nodemon server.js"
+    "test": "MODE_ENV=test jest --runInBand --detectOpenHandles",
+    "start": "npm server.js",
+    "dev": "nodemon server.js",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -22,9 +24,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "lru-cache": "^7.14.1",
+    "joi": "^17.7.0",
     "mysql2": "^2.3.3",
-    "sequelize": "^6.25.5",
+    "redis": "^4.5.1",
+    "sequelize": "^6.28.0",
     "sequelize-cli": "^6.5.2"
   },
   "devDependencies": {

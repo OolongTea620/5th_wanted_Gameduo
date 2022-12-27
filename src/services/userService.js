@@ -1,56 +1,42 @@
-const sequelize = require("sequelize");
+const { sequelize } = require("../models");
 
 const User = require("../models/user");
-const raidRecordService = require("../services/raidRecordService");
+const RaidRecord = require("../models/raidRecord");
+const { redisCli } = require("../cache");
 const error = require("../middlewares/errorConstructor");
 
-const create = async () => {
-  const newUser = await User.create();
-  return { userId: newUser.userId };
+const createUser = async () => {
+  try {
+    const sequelizeTransaction = await sequelize.transaction();
+    const newUser = await User.create(
+      {},
+      { transaction: sequelizeTransaction }
+    );
+
+    const [incrReulst, addRankResult, userAddReult] = await redisCli
+      .multi()
+      .zAdd("rank", { score: 0, value: `${newUser.id}` })
+      .exec();
+    await sequelizeTransaction.commit();
+    return { userId: newUser.id };
+  } catch (err) {
+    sequelizeTransaction.rollback();
+  }
 };
 
-const getUserInfo = async (userId) => {
-  const totalScore = await User.findOne({ where: { userId } }).totalScore;
-  const raidRecords = await raidRecordService.getRecordsByuserId(userId);
+const getUserInfoById = async (userId) => {
+  const user = await User.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new error("NotFound User", 404);
+  }
+  const raidRecords = await RaidRecord.findAll({
+    attributes: [["id", "raidRecordId"], "enterTime", "endTime", "score"],
+    where: { userId: userId },
+  });
   return {
-    totalScore,
+    totalScore: user.totalScore,
     bossRaidHistory: raidRecords,
   };
 };
 
-const rankScoreByuserId = async (req) => {
-  const { userId } = req.body;
-  const rankList = await User.findAll({
-    attributes: [
-      "userId",
-      "totalScore",
-      [
-        sequelize.literal("rank() over(order by totalScore desc)- 1"),
-        "ranking",
-      ],
-    ],
-  });
-
-  const userRank = rankList.reduce((acc, obj) => {
-    if (obj.userId === userId) {
-      acc = obj;
-    }
-    return acc;
-  }, {});
-
-  return { topRankerInfoList: rankList, myRankingInfo: userRank };
-};
-
-const addUserTotalScore = async (userId, score) => {
-  const result = await sequelize.query(
-    `update users set totalScore = totalScore + ${score} where num = ${userId}`
-  );
-  return result;
-};
-
-module.exports = {
-  create,
-  getUserInfo,
-  rankScoreByuserId,
-  addUserTotalScore,
-};
+module.exports = { createUser, getUserInfoById };

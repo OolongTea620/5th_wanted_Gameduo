@@ -4,18 +4,18 @@ module.exports = class RaidRecord extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        raidRecordId: {
-          type: Sequelize.BIGINT.UNSIGNED,
-          autoIncrement: true,
-          primaryKey: true,
-        },
         score: {
           type: Sequelize.INTEGER.UNSIGNED,
           defaultValue: 0,
         },
+        level: {
+          type: Sequelize.INTEGER.UNSIGNED,
+          allowNull: false,
+        },
         enterTime: {
           type: Sequelize.DATE,
           allowNull: false,
+          defaultValue: Sequelize.NOW,
         },
         endTime: {
           type: Sequelize.DATE,
@@ -24,10 +24,10 @@ module.exports = class RaidRecord extends Sequelize.Model {
       },
       {
         sequelize,
-        timestamps: false,
+        timestamps: true,
         underscored: false,
         modelName: "RaidRecord",
-        tableName: "raidRecord",
+        tableName: "raidRecords",
         charset: "utf8mb4",
       }
     );
@@ -36,7 +36,7 @@ module.exports = class RaidRecord extends Sequelize.Model {
   static associate(db) {
     db.RaidRecord.belongsTo(db.User, {
       foreignKey: "userId",
-      targetKey: "userId",
+      targetKey: "id",
     });
   }
 };

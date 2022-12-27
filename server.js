@@ -1,8 +1,8 @@
 require("dotenv").config();
-
 const { createApp } = require("./app");
 const { sequelize } = require("./src/models");
-const putScoreInfoCache = require("./src/cache/getScoreInfo");
+const { redisCli } = require("./src/cache");
+const { settingScore } = require("./src/cache/initScore");
 
 const startServer = async () => {
   const app = createApp();
@@ -11,17 +11,17 @@ const startServer = async () => {
   await sequelize
     .sync({ force: false, alter: true })
     .then(() => {
-      console.log("mysql 연결 성공");
+      console.log("연결 성공!");
     })
     .catch((err) => {
       console.error(err);
     });
+  await redisCli.connect();
+  settingScore();
 
   app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);
   });
-
-  await putScoreInfoCache();
 };
 
 startServer();
