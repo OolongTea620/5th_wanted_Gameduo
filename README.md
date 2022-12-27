@@ -5,7 +5,7 @@
   <h3 align="center">원티드 프리온보딩 5차 과제</h3>
   </br>
   <p align="center">
-  서버 캐시를 사용한 의자앉기 방식의 보스룸 게임 만들기
+  서버 캐시를 사용한 보스레이드 PVE 컨텐츠 만들기
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template"><strong>API 문서 보러가기 »</strong></a> -->
     <br />
@@ -15,11 +15,11 @@
 <!-- ABOUT THE PROJECT -->
 ## 프로젝트 소개
 개발 기간   
-2022.12.19 ~ 2022.12.24
-// *redis npm 라이브러리 다운 버전 사용해서 재구현*
+2022.12.19 ~ 2022.12.27   
+- *redis npm 라이브러리 다운 버전 사용해서 재구현*
 
 2022.11.12 ~ 2022.11.18         
-// *redis-npm 이슈로 다른 Server cache 라이브러리를 사용해서 임시로 구현*
+- *redis-npm 이슈로 다른 Server cache 라이브러리를 사용해서 임시로 구현*
 
 프로젝트 요구 사항   
 #### 간단한 보스레이드 프로그래밍 
@@ -36,6 +36,7 @@
 배운 것:
 * 캐시 라이브러리 이용한 구현(개발)
 * 서버 캐시 구현 방법
+* unit Test
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### 개발 환경
@@ -44,11 +45,16 @@
 운영체제: ubuntu 22.04     
 IDE : Windows VScode
 
-
 개발 언어, 라이브러리  
-`Javascript`, `Express(Node.js)`, `lru-cache` (redis 대체), sequelize
-// *redis npm [라이브러리 작동오류 이슈](https://stackoverflow.com/questions/70145795/node-redis-does-not-work-on-my-windows-computer-even-though-the-server-is-up-and)로 대체해서 사용*
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+`Javascript`   
+`Express(Node.js)`      
+`lru-cache` (redis 대체), // *redis npm [라이브러리 작동오류 이슈](https://stackoverflow.com/questions/70145795/node-redis-does-not-work-on-my-windows-computer-even-though-the-server-is-up-and)로 대체해서 사용*  
+`sequelize`   
+`jest`
+
+### 컨벤션 
+javascript : [Airbnb ](https://github.com/airbnb/javascript)  
+commit : [git commit 메시지 컨벤션](https://www.conventionalcommits.org/en/v1.0.0/)   
 
 파일 구조
 ```.
@@ -71,6 +77,8 @@ IDE : Windows VScode
 │   └── tests
 └── .env
 ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### 프로젝트 구동 방법
 
 1. 레포지토리 다운받기
@@ -132,7 +140,7 @@ BOSSRAID_INFO_URL=과제 json데이터 S3 주소
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
-## 개발 계획
+## 개발 과정
 **구현 기능 명세**  
 
 [API기능명세 URL](https://docs.google.com/spreadsheets/d/1SkjyH8MstoKRNQVduIeXUZnzSRG-P8zjsFJtw92Tq74/edit?usp=sharing)
@@ -163,6 +171,18 @@ API
 
 그 외
 - [x] S3 url을 이용해서 레이드 점수표 정보 로드 하기
+
+### 테스트
+- [ ] 유닛테스트 
+  - [x] Services 테스트
+  - [ ] Validator 테스트
+- [ ] 통합테스트 (75%)
+
+**테스트 커버리지 상황** 
+- validator 유닛테스트 미완료 -> 많이 사용되는 모듈인 만큼 몰려 있음
+- superTest 75% 정도 완료
+<img src="./wanted5_coverage.png" width="600px" title="test coverage"/>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
@@ -172,9 +192,9 @@ API
 - [x] README.md 작성
 - [ ] Test 작성
   - [x] unitTest
-  - [ ] superTest
+  - [ ] superTest (75% 완료)
 - [x] Redis-npm으로 다시 구현(리펙토링)
-- [ ] Validator 도입 (Joi)
+- [x] Validator 도입 (Joi)
 - [ ] swagger도입
 
 
@@ -187,18 +207,12 @@ API
   ```text
   * lru-cache를 사용한 이유. 
   1. expire key와 동일한 기능이 있었음. 
-  2. value 자료형이 redis보다 자유도가 높았음 (redis는 value 데이터타입에 따라 명령어가 달라지는 경우가 이ㅅ)
-  3. 한글 키워드 검색시 선례가 있었음 
+  2. value 자료형이 redis보다 자유도가 높았음 (redis는 value 데이터타입에따라 cli 명령어가 달라진다.)
+  3. 한글키워드 검색 시 선례가 있었음 
   ```
-1. 최종 배포(Main commit)[] 에서는 다시 redis-node로 다시 개발, main에 반영
+\> [commit : 7c8c893 + c99277e](https://github.com/OolongTea620/5th_wanted_Gameduo/commit/dcf37e91a0723d93cb5293fe0ec2e43fc7c7714c): 다시 redis-node로 다시 개발, main에 반영
 
   
-## 도움받은 자료
-### 서적
-
-### 링크
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
