@@ -51,7 +51,7 @@ const startBossRaid = async (userId, level) => {
   );
 
   const newRaidId = newRaid.id;
-  const results = await redisCli
+  await redisCli
     .multi()
     .hSet("bossRaid", ["score", score, "userId", userId, "raidId", newRaidId])
     .hSet("recentRaid", ["score", score, "userId", userId, "raidId", newRaidId])
@@ -71,7 +71,7 @@ const endBossRaid = async (userId, raidRecordId) => {
   const recentRaid = await redisCli.hGetAll("recentRaid");
 
   if (!isbossRaid && recentRaid) {
-    throw new error("Timeout ", 400);
+    throw new error("Invalid Value ", 400);
   }
 
   const bossRaid = await redisCli.hGetAll("bossRaid");
@@ -79,13 +79,13 @@ const endBossRaid = async (userId, raidRecordId) => {
     bossRaid.userId !== String(userId) ||
     bossRaid.raidId !== String(raidRecordId)
   ) {
-    throw new error("get score fail", 200);
+    throw new error("Invalid Value", 400);
   }
   const transaction = await sequelize.transaction();
   const endTime = new Date();
   const score = bossRaid.score;
 
-  const results = await redisCli
+  await redisCli
     .multi()
     .zIncrBy("rank", score, `${userId}`)
     .del("bossRaid")

@@ -1,10 +1,11 @@
 const { sequelize } = require("../models");
 const { redisCli } = require("../cache");
-const { settingScore } = require("../cache/initScore");
 
+const { settingScore } = require("../cache/initScore");
 const User = require("../models/user");
 const userService = require("../services/userService");
 const raidService = require("../services/raidService");
+const raidRecordService = require("../services/raidRecordService");
 
 beforeAll(async () => {
   await sequelize
@@ -60,7 +61,6 @@ describe("raidServiceTest", () => {
   test("end BossRaid, get score success", async () => {
     const result = await userService.createUser();
     const start = await raidService.startBossRaid(result.userId, 2); // userid : 3 , level : 2
-    console.log("new id ", result.userId);
     const bossRaid = await redisCli.hGetAll("bossRaid");
     const addedScore = bossRaid.score;
 
@@ -84,6 +84,14 @@ describe("userServiceTest : ", () => {
     const user3 = await userService.getUserInfoById(3); // 3번 유저 조회
     expect(user3.totalScore).toBe(85);
     expect(user3.bossRaidHistory).toHaveLength(1);
+  });
+});
+
+describe("raidRecordService ", () => {
+  test("getUserInfo", async () => {
+    const user1 = await raidRecordService.getRankingListByuserId(1);
+    expect(user1.topRankerInfoList).toHaveLength(3);
+    expect(user1.myRankingInfo.ranking).toBe(2);
   });
 });
 

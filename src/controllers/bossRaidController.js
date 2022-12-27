@@ -10,8 +10,10 @@ const getStatus = async (req, res) => {
 const raidStart = async (req, res) => {
   const { userId, level } = req.body;
   const result = await raidService.startBossRaid(userId, level);
-
-  res.status(201).json(result);
+  if (result.isEntered) {
+    res.status(201).json(result);
+  }
+  res.status(200).json(result);
 };
 
 const raidEnd = async (req, res) => {

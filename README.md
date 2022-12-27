@@ -41,7 +41,7 @@
 ### 개발 환경
 개발 환경 
 
-운영체제: ubuntu 22.04  
+운영체제: ubuntu 22.04     
 IDE : Windows VScode
 
 
@@ -50,6 +50,27 @@ IDE : Windows VScode
 // *redis npm [라이브러리 작동오류 이슈](https://stackoverflow.com/questions/70145795/node-redis-does-not-work-on-my-windows-computer-even-though-the-server-is-up-and)로 대체해서 사용*
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+파일 구조
+```.
+├── README.md
+├── app.js
+├── package-lock.json
+├── package.json
+├── server.js
+├── src
+│   ├── cache
+│   ├── config
+│   │   └── config.json 
+│   ├── controllers
+│   ├── middlewares
+│   ├── migrations
+│   ├── models
+│   ├── routes
+│   ├── seeders
+│   ├── services
+│   └── tests
+└── .env
+```
 ### 프로젝트 구동 방법
 
 1. 레포지토리 다운받기
@@ -72,7 +93,8 @@ IDE : Windows VScode
    npm start // 서버 프로그램 실행
    ```
 
-  환경 변수
+  환경 변수   
+  1. dotenv
   ```dotenv
 # Server
 MODE_ENV=[development|production]중 1
@@ -87,12 +109,30 @@ REDIS_PORT=서비스 리스닝 포트
 # S3 url
 BOSSRAID_INFO_URL=과제 json데이터 S3 주소
   ```
+
+ 2. /config/config.json
+   ```json
+   {
+  "development": {
+    "username": "유저명",
+    "password": "비밀번호",
+    "database": "스키마명(데이터베이스명)",
+    "host": "(연결 포트)",
+    "dialect": "mysql"
+  },
+  "test": {
+    ... development와 스키마명 제외 동일
+  },
+  "production": {
+    ...(생략)
+  }
+}
+   ```    
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
-## 구현 계획
-
-### 개발 계획
+## 개발 계획
 **구현 기능 명세**  
 
 [API기능명세 URL](https://docs.google.com/spreadsheets/d/1SkjyH8MstoKRNQVduIeXUZnzSRG-P8zjsFJtw92Tq74/edit?usp=sharing)
@@ -107,7 +147,7 @@ ERD
 **redis cache**  
 | keyName  | 데이터 타입 |                       설명                       |      비고      |
 | :------- | :---------: | :----------------------------------------------: | :------------: |
-| ranking  | sorted sets | 서버 구동 이후, 유저가 획득한 보스레이드 총 점수 | ranking조회 용 |
+| rank     | sorted sets | 서버 구동 이후, 유저가 획득한 보스레이드 총 점수 | ranking조회 용 |
 | bossRaid |   hashes    |          현재 진행중인 레이드 진행 정보          |   180초 제한   |
 
 
@@ -123,7 +163,6 @@ API
 
 그 외
 - [x] S3 url을 이용해서 레이드 점수표 정보 로드 하기
-- [ ] Input validate 추가
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
@@ -132,17 +171,27 @@ API
 - [x] API 구현
 - [x] README.md 작성
 - [ ] Test 작성
-  - [ ] unitTest
+  - [x] unitTest
   - [ ] superTest
 - [x] Redis-npm으로 다시 구현(리펙토링)
+- [ ] Validator 도입 (Joi)
 - [ ] swagger도입
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## 개발 이슈
+**redis-node 라이브러리 비구동 문제** :  
+1. redis-node 버전을 4.x.x -> 3.x.x 한 단계 낮추어서 했지만 연결은 되어도 레디스에 데이터 입력이 되지 않았음.   
+2. npm 라이브러리 검색으로 대체 모듈을 찾고 대체해서 개발 [git commit url]()
+  ```text
+  * lru-cache를 사용한 이유. 
+  1. expire key와 동일한 기능이 있었음. 
+  2. value 자료형이 redis보다 자유도가 높았음 (redis는 value 데이터타입에 따라 명령어가 달라지는 경우가 이ㅅ)
+  3. 한글 키워드 검색시 선례가 있었음 
+  ```
+1. 최종 배포(Main commit)[] 에서는 다시 redis-node로 다시 개발, main에 반영
 
-**redis-node 비구동 문제**
   
 ## 도움받은 자료
 ### 서적
